@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typing Speed Test Results</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin: 50px auto;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin: 0;
+            color: #007bff;
+        }
+
+        .results {
+            margin: 20px 0;
+        }
+
+        .results p {
+            font-size: 1.5rem;
+            margin: 10px 0;
+            animation: slideIn 1s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        footer {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #888;
+        }
+
+        footer p {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Typing Test Results</h1>
+        <div class="results">
+            <p><strong>Speed:</strong> <span id="result-speed">0</span> WPM</p>
+            <p><strong>Accuracy:</strong> <span id="result-accuracy">100</span>%</p>
+        </div>
+        <footer>
+            <p>&copy; 2024 Typing Speed Test. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const speed = localStorage.getItem('speed') || 0;
+            const accuracy = localStorage.getItem('accuracy') || 100;
+
+            document.getElementById('result-speed').textContent = speed;
+            document.getElementById('result-accuracy').textContent = accuracy;
+        });
+
+        // Optionally, clear the stored values if you don't need them anymore
+        window.addEventListener('beforeunload', () => {
+            localStorage.removeItem('speed');
+            localStorage.removeItem('accuracy');
+        });
+    </script>
+</body>
+</html>

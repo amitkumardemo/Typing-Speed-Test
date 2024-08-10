@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typing Speed Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: #007bff;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        nav ul li {
+            display: inline;
+            margin: 0 15px;
+        }
+
+        nav ul li a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+
+        nav ul li a:hover {
+            color: #ffecb3;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        #difficulty {
+            margin: 20px 0;
+        }
+
+        #difficulty-select {
+            padding: 10px;
+            font-size: 1rem;
+            border-radius: 5px;
+            border: 1px solid #007bff;
+            transition: border-color 0.3s;
+            background-color: #fff;
+        }
+
+        #difficulty-select:focus {
+            border-color: #0056b3;
+            outline: none;
+        }
+
+        #text-display {
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px solid #ddd;
+            background-color: #fff;
+            border-radius: 5px;
+            min-height: 100px;
+            font-size: 1.2rem;
+            overflow-wrap: break-word;
+            transition: background-color 0.3s;
+            animation: fadeIn 1s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        #text-input {
+            width: 100%;
+            height: 100px;
+            padding: 15px;
+            font-size: 1.2rem;
+            border-radius: 5px;
+            border: 2px solid #ddd;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+        }
+
+        #text-input:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+            outline: none;
+        }
+
+        #timer, #results {
+            margin: 20px 0;
+            font-size: 1.2rem;
+            animation: fadeIn 1s ease-out;
+        }
+
+        #complete-msg {
+            display: none;
+            font-size: 1.5rem;
+            color: #28a745;
+            font-weight: bold;
+            animation: fadeIn 2s ease-out;
+        }
+
+        footer {
+            background-color: #007bff;
+            color: #fff;
+            text-align: center;
+            padding: 15px;
+            box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        footer p {
+            margin: 5px 0;
+        }
+
+        footer .developer-credit {
+            font-size: 0.9rem;
+            color: #e0e0e0;
+        }
+
+        #leaderboard {
+            margin-top: 30px;
+            padding: 10px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        #leaderboard ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        #leaderboard ul li {
+            margin: 5px 0;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+            padding: 5px;
+        }
+
+        #leaderboard ul li:hover {
+            background-color: #f1f1f1;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="#">Home</a></li>
+                <li><a href="#">About</a></li>
+                <li><a href="#">Leaderboard</a></li>
+            </ul>
+        </nav>
+        <h1>Typing Speed Test</h1>
+    </header>
+
+    <main>
+        <div id="difficulty">
+            <label for="difficulty-select">Select Difficulty:</label>
+            <select id="difficulty-select">
+                <option value="easy">Easy</option>
+                <option value="medium">Medium</option>
+                <option value="hard">Hard</option>
+            </select>
+        </div>
+        <div id="text-display">Select a difficulty to start typing.</div>
+        <textarea id="text-input" placeholder="Start typing here..."></textarea>
+        <div id="timer">Time: 60s</div>
+        <div id="results">
+            <p>Speed: <span id="speed">0</span> WPM</p>
+            <p>Accuracy: <span id="accuracy">100</span>%</p>
+        </div>
+        <div id="complete-msg">Test Complete! Redirecting...</div>
+
+        <div id="leaderboard">
+            <h2>Top Scores</h2>
+            <ul id="leaderboard-list">
+                <!-- Leaderboard entries will be dynamically inserted here -->
+            </ul>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Typing Speed Test. All rights reserved.</p>
+        <p class="developer-credit">Developed by Amit Kumar</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const textDisplay = document.getElementById('text-display');
+            const textInput = document.getElementById('text-input');
+            const timerElement = document.getElementById('timer');
+            const speedElement = document.getElementById('speed');
+            const accuracyElement = document.getElementById('accuracy');
+            const difficultySelect = document.getElementById('difficulty-select');
+            const completeMsg = document.getElementById('complete-msg');
+            const leaderboardList = document.getElementById('leaderboard-list');
+
+            const texts = {
+                easy: "The quick brown fox jumps over the lazy dog.",
+                medium: "A journey of a thousand miles begins with a single step.",
+                hard: "The curious cat rapidly examined the intricate labyrinth of the intricate mechanical contraption. The maze was complex and full of twists and turns, challenging even the most astute minds."
+            };
+
+            const TIME_LIMIT = 60; // Time limit in seconds
+            let startTime;
+            let timerInterval;
+            let typingCompleted = false;
+
+            function startTimer() {
+                startTime = new Date();
+                timerInterval = setInterval(updateTimer, 1000);
+            }
+
+            function updateTimer() {
+                const elapsed = Math.floor((new Date() - startTime) / 1000);
+                const timeLeft = TIME_LIMIT - elapsed;
+                timerElement.textContent = `Time: ${Math.max(timeLeft, 0)}s`;
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    if (!typingCompleted) {
+                        calculateResults();
+                    }
+                }
+            }
+
+            function calculateResults() {
+                if (!typingCompleted) {
+                    const endTime = new Date();
+                    const elapsed = Math.floor((endTime - startTime) / 1000);
+                    const typedText = textInput.value;
+                    const wordCount = typedText.split(/\s+/).length;
+
+                    const wpm = Math.round((wordCount / elapsed) * 60);
+                    speedElement.textContent = wpm;
+
+                    const sampleText = textDisplay.textContent;
+                    const textArray = sampleText.split('');
+                    const typedArray = typedText.split('');
+                    let correctChars = 0;
+
+                    textArray.forEach((char, index) => {
+                        if (typedArray[index] === char) {
+                            correctChars++;
+                        }
+                    });
+
+                    const accuracy = Math.round((correctChars / textArray.length) * 100);
+                    accuracyElement.textContent = accuracy;
+
+                    // Store results and redirect to results.html
+                    localStorage.setItem('speed', wpm);
+                    localStorage.setItem('accuracy', accuracy);
+
+                    completeMsg.style.display = 'block';
+                    setTimeout(() => {
+                        window.location.href = 'results.html';
+                    }, 2000); // Redirect after 2 seconds
+                }
+            }
+
+            function loadText() {
+                textDisplay.textContent = texts[difficultySelect.value];
+                textInput.value = '';
+                startTimer();
+            }
+
+            function updateLeaderboard(score) {
+                // Simulate leaderboard data
+                const leaderboardData = [
+                    { name: 'John Doe', score: score },
+                    { name: 'Jane Smith', score: score - 5 },
+                    { name: 'Alice Johnson', score: score - 10 }
+                ];
+
+                // Clear existing leaderboard
+                leaderboardList.innerHTML = '';
+                leaderboardData.forEach(entry => {
+                    const li = document.createElement('li');
+                    li.textContent = `${entry.name}: ${entry.score} WPM`;
+                    leaderboardList.appendChild(li);
+                });
+            }
+
+            difficultySelect.addEventListener('change', loadText);
+            textInput.addEventListener('input', () => {
+                if (textInput.value === textDisplay.textContent && !typingCompleted) {
+                    calculateResults();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
